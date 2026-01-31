@@ -4,14 +4,16 @@
   margin: 1rem auto;
   max-width: 1100px;
   z-index: 1000;
-  padding: 0.75rem 0;
+  padding: 0.75rem 1.5rem;
   border-radius: 20px !important;
+  width: calc(100% - 2rem);
 }
 
 .nav-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
 
 .logo {
@@ -55,4 +57,16 @@
 .contact-btn:hover {
   background: var(--primary-dark);
   transform: scale(1.05);
+}
+
+@media (max-width: 640px) {
+  .logo span {
+    display: none;
+  }
+  .nav-links {
+    gap: 1rem;
+  }
+  .nav-links span {
+    display: none;
+  }
 }

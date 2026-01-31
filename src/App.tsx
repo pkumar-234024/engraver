@@ -6,6 +6,8 @@ import Navbar from './components/common/Navbar';
 import Home from './pages/public/Home';
 import ProductDetail from './pages/public/ProductDetail';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import Login from './pages/admin/Login';
+import ProtectedRoute from './components/common/ProtectedRoute';
 import './styles/global.css';
 
 const App: React.FC = () => {
@@ -18,7 +20,15 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/login" element={<Login />} />
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } 
+              />
             </Routes>
           </main>
           <footer className="footer-simple">
