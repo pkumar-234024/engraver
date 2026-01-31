@@ -6,6 +6,7 @@ import Header from './components/common/Header';
 import Footer from './components/common/Footer';
 import Home from './pages/public/Home';
 import ProductDetail from './pages/public/ProductDetail';
+import PrivacyPolicy from './pages/public/PrivacyPolicy';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import Login from './pages/admin/Login';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -21,6 +22,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/login" element={<Login />} />
               <Route 
                 path="/admin" 
