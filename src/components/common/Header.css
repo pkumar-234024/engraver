@@ -37,8 +37,17 @@
   font-weight: 800;
 }
 
-.logo-icon {
+.logo-icon, .nav-logo-img {
+  width: 32px;
+  height: 32px;
   color: var(--primary);
+}
+
+.nav-logo-img {
+  object-fit: contain;
+  background: white;
+  border-radius: 6px;
+  padding: 2px;
 }
 
 .nav-links {

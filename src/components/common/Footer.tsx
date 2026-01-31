@@ -13,7 +13,11 @@ const Footer: React.FC = () => {
       <div className="container footer-grid">
         <div className="footer-brand">
           <div className="logo">
-            <Scissors className="logo-icon" />
+            {site.logoUrl ? (
+              <img src={site.logoUrl} alt="Logo" className="footer-logo-img" />
+            ) : (
+              <Scissors className="logo-icon" />
+            )}
             <span className="gradient-text">{site.name}</span>
           </div>
           <p>{site.tagline}</p>

@@ -37,7 +37,11 @@ const Header: React.FC = () => {
     <nav className={`header ${isScrolled ? 'scrolled' : ''} glass-card`}>
       <div className="container nav-content">
         <Link to="/" className="logo" onClick={() => setIsMenuOpen(false)}>
-          <Scissors className="logo-icon" />
+          {site.logoUrl ? (
+            <img src={site.logoUrl} alt="Logo" className="nav-logo-img" />
+          ) : (
+            <Scissors className="logo-icon" />
+          )}
           <span className="gradient-text">{site.logoText}</span>
         </Link>
         

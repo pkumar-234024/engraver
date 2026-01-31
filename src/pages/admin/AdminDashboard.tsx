@@ -8,7 +8,7 @@ import { updateSiteConfig } from '../../features/site/siteSlice';
 import { 
   Trash2, Package, Tag, PlusCircle, X, Search, Filter, 
   Edit3, LogOut, CheckCircle, 
-  Plus, Settings, Save, Globe, Phone
+  Plus, Settings, Save, Globe, Phone as PhoneIcon, Upload
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './AdminDashboard.css';
@@ -80,6 +80,18 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setSiteSettings(prev => ({ ...prev, logoUrl: result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const removeImage = (index: number) => {
     setNewProduct(prev => {
       const updatedImages = prev.images.filter((_, i) => i !== index);
@@ -124,6 +136,22 @@ const AdminDashboard: React.FC = () => {
     setTimeout(() => setStatusMessage(null), 3000);
   };
 
+  const handleDeleteWithPrompt = (id: string, name: string, type: 'product' | 'category') => {
+    const promptValue = window.prompt(`CRITICAL ACTION: To delete "${name}", please type the website name "${site.name}" to confirm:`);
+    
+    if (promptValue === site.name) {
+      if (type === 'product') {
+        dispatch(deleteProduct(id));
+        showStatus('success', 'Product permanently removed.');
+      } else {
+        dispatch(deleteCategory(id));
+        showStatus('success', 'Category permanently removed.');
+      }
+    } else if (promptValue !== null) {
+      alert("Verification failed. Content was not deleted.");
+    }
+  };
+
   const handleAddProduct = (e: React.FormEvent) => {
     e.preventDefault();
     if (newProduct.images.length === 0 && !newProduct.imageUrl) {
@@ -165,8 +193,11 @@ const AdminDashboard: React.FC = () => {
 
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(updateSiteConfig(siteSettings));
-    showStatus('success', 'Site settings updated!');
+    const confirmed = window.confirm("Are you sure you want to update the site configuration? These changes will be live immediately.");
+    if (confirmed) {
+      dispatch(updateSiteConfig(siteSettings));
+      showStatus('success', 'Site settings updated successfully!');
+    }
   };
 
   return (
@@ -299,7 +330,7 @@ const AdminDashboard: React.FC = () => {
                           <button onClick={() => openEditModal(product)} className="edit-btn" title="Edit Product">
                             <Edit3 size={18} />
                           </button>
-                          <button onClick={() => dispatch(deleteProduct(product.id))} className="delete-btn" title="Delete Product">
+                          <button onClick={() => handleDeleteWithPrompt(product.id, product.name, 'product')} className="delete-btn" title="Delete Product">
                             <Trash2 size={18} />
                           </button>
                         </td>
@@ -338,7 +369,7 @@ const AdminDashboard: React.FC = () => {
                     <td className="name">{category.name}</td>
                     <td className="desc">{category.description}</td>
                     <td className="actions">
-                      <button onClick={() => dispatch(deleteCategory(category.id))} className="delete-btn">
+                      <button onClick={() => handleDeleteWithPrompt(category.id, category.name, 'category')} className="delete-btn">
                         <Trash2 size={18} />
                       </button>
                     </td>
@@ -361,6 +392,37 @@ const AdminDashboard: React.FC = () => {
                   <Globe size={18} />
                   <h3>General Branding</h3>
                 </div>
+                
+                <div className="form-group">
+                  <label>Brand Logo Asset</label>
+                  <div className="logo-upload-preview">
+                    {siteSettings.logoUrl ? (
+                      <div className="logo-img-wrapper">
+                        <img src={siteSettings.logoUrl} alt="Logo Preview" />
+                        <button type="button" className="remove-logo" onClick={() => setSiteSettings(prev => ({...prev, logoUrl: ''}))}>
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="logo-placeholder">
+                        <PlusCircle size={24} />
+                      </div>
+                    )}
+                    <div className="logo-controls">
+                      <input 
+                        type="text" 
+                        placeholder="Paste Image URL or..." 
+                        value={siteSettings.logoUrl} 
+                        onChange={e => setSiteSettings({...siteSettings, logoUrl: e.target.value})}
+                      />
+                      <label className="logo-file-btn">
+                        <Upload size={16} /> Choose File
+                        <input type="file" accept="image/*" hidden onChange={handleLogoUpload} />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="form-row">
                   <div className="form-group">
                     <label>Website Name</label>
@@ -388,7 +450,7 @@ const AdminDashboard: React.FC = () => {
 
               <div className="settings-section">
                 <div className="section-header-mini">
-                  <Phone size={18} />
+                  <PhoneIcon size={18} />
                   <h3>Contact Channels</h3>
                 </div>
                 <div className="form-row">

@@ -4,6 +4,7 @@ export interface SiteConfig {
   name: string;
   tagline: string;
   logoText: string;
+  logoUrl?: string;
   contact: {
     phone: string;
     alternatePhone: string;
@@ -22,6 +23,7 @@ const initialState: SiteConfig = {
   name: "Engraver",
   tagline: "Precision laser engraving and custom designs for professional results.",
   logoText: "Engraver",
+  logoUrl: "",
   contact: {
     phone: "+1 (555) 123-4567",
     alternatePhone: "+1 (555) 987-6543",
