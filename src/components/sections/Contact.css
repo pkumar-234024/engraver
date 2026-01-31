@@ -1,0 +1,119 @@
+.contact-section {
+  padding: 8rem 0;
+}
+
+.contact-preview {
+  padding: 5rem;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.contact-preview::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.05), transparent 70%);
+  pointer-events: none;
+}
+
+.contact-content h2 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.contact-content p {
+  color: var(--text-muted);
+  font-size: 1.125rem;
+  margin-bottom: 3.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.contact-info {
+  display: flex;
+  justify-content: center;
+  gap: 4rem;
+  margin-bottom: 4rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: left;
+}
+
+.contact-item .icon {
+  width: 50px;
+  height: 50px;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-item .label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.contact-item .value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+.contact-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.25rem 3rem;
+  font-size: 1.125rem;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .contact-section {
+    padding: 4rem 0;
+  }
+  .contact-preview {
+    padding: 3rem 1.25rem;
+  }
+  .contact-info {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+    display: inline-flex;
+    margin: 0 auto 3rem;
+  }
+  .contact-content h2 {
+    font-size: 2.25rem;
+    line-height: 1.2;
+  }
+  .contact-content p {
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+  }
+  .contact-cta {
+    width: 100%;
+    padding: 1rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-content h2 {
+    font-size: 1.75rem;
+  }
+  .contact-item .value {
+    font-size: 1.1rem;
+  }
+}

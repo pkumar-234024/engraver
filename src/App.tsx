@@ -2,7 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
-import Navbar from './components/common/Navbar';
+import Header from './components/common/Header';
+import Footer from './components/common/Footer';
 import Home from './pages/public/Home';
 import ProductDetail from './pages/public/ProductDetail';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -15,7 +16,7 @@ const App: React.FC = () => {
     <Provider store={store}>
       <Router>
         <div className="app-wrapper">
-          <Navbar />
+          <Header />
           <main>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -31,11 +32,7 @@ const App: React.FC = () => {
               />
             </Routes>
           </main>
-          <footer className="footer-simple">
-            <div className="container">
-              <p>&copy; {new Date().getFullYear()} EngraverPro. All rights reserved.</p>
-            </div>
-          </footer>
+          <Footer />
         </div>
       </Router>
     </Provider>

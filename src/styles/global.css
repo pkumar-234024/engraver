@@ -102,6 +102,12 @@ button {
   padding: 0 2rem;
 }
 
+@media (max-width: 640px) {
+  .container {
+    padding: 0 1.25rem;
+  }
+}
+
 .app-wrapper {
   min-height: 100vh;
   display: flex;
@@ -110,6 +116,7 @@ button {
 
 main {
   flex: 1;
+  padding-top: 2rem;
 }
 
 .footer-simple {
@@ -121,7 +128,13 @@ main {
 }
 
 section {
-  padding: 4rem 0;
+  padding: 6rem 0;
+}
+
+@media (max-width: 768px) {
+  section {
+    padding: 4rem 0;
+  }
 }
 
 h1,

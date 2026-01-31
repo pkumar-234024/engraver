@@ -99,8 +99,35 @@
   font-size: 1.125rem;
 }
 
-@media (max-width: 968px) {
+@media (max-width: 768px) {
+  .product-detail-page {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+  }
   .detail-grid {
     grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .detail-content h1 {
+    font-size: 2.25rem;
+  }
+  .price-tag {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .back-link {
+    margin-bottom: 2rem;
+  }
+  .full-details {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .detail-content h1 {
+    font-size: 1.75rem;
+  }
+  .detail-content .description {
+    font-size: 1.1rem;
   }
 }
