@@ -6,7 +6,8 @@ import { addCategory, deleteCategory } from '../../features/categories/categoryS
 import { logout } from '../../features/auth/authSlice';
 import { 
   Trash2, Package, Tag, PlusCircle, X, Search, Filter, 
-  Edit3, LogOut, Upload, Image as ImageIcon, CheckCircle 
+  Edit3, LogOut, CheckCircle, 
+  Plus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './AdminDashboard.css';
@@ -34,7 +35,8 @@ const AdminDashboard: React.FC = () => {
     description: '',
     price: '',
     categoryId: '',
-    imageUrl: '',
+    imageUrl: '', // This will be our primary/thumbnail
+    images: [] as string[], // All gallery images
     details: ''
   });
 
@@ -53,14 +55,41 @@ const AdminDashboard: React.FC = () => {
   }, [products, searchTerm, filterCategory]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewProduct({ ...newProduct, imageUrl: reader.result as string });
-      };
-      reader.readAsDataURL(file);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = reader.result as string;
+          setNewProduct(prev => {
+            const updatedImages = [...prev.images, result];
+            return { 
+              ...prev, 
+              images: updatedImages,
+              // If primary image is empty, set it to the first uploaded one
+              imageUrl: prev.imageUrl || updatedImages[0] 
+            };
+          });
+        };
+        reader.readAsDataURL(file);
+      });
     }
+  };
+
+  const removeImage = (index: number) => {
+    setNewProduct(prev => {
+      const updatedImages = prev.images.filter((_, i) => i !== index);
+      let updatedPrimary = prev.imageUrl;
+      // If we removed the primary image, pick the next available one
+      if (prev.imageUrl === prev.images[index]) {
+        updatedPrimary = updatedImages[0] || '';
+      }
+      return { ...prev, images: updatedImages, imageUrl: updatedPrimary };
+    });
+  };
+
+  const setAsPrimary = (url: string) => {
+    setNewProduct(prev => ({ ...prev, imageUrl: url }));
   };
 
   const openEditModal = (product: any) => {
@@ -72,6 +101,7 @@ const AdminDashboard: React.FC = () => {
       price: product.price.toString(),
       categoryId: product.categoryId,
       imageUrl: product.imageUrl,
+      images: product.images || [product.imageUrl],
       details: product.details
     });
     setShowProductModal(true);
@@ -82,7 +112,7 @@ const AdminDashboard: React.FC = () => {
     setTimeout(() => {
       setEditMode(false);
       setCurrentId(null);
-      setNewProduct({ name: '', description: '', price: '', categoryId: '', imageUrl: '', details: '' });
+      setNewProduct({ name: '', description: '', price: '', categoryId: '', imageUrl: '', images: [], details: '' });
     }, 200);
   };
 
@@ -93,10 +123,16 @@ const AdminDashboard: React.FC = () => {
 
   const handleAddProduct = (e: React.FormEvent) => {
     e.preventDefault();
+    if (newProduct.images.length === 0 && !newProduct.imageUrl) {
+      showStatus('error', 'Please upload at least one image.');
+      return;
+    }
+
     const productData = {
       ...newProduct,
       price: parseFloat(newProduct.price) || 0,
-      categoryId: newProduct.categoryId || (categories[0]?.id || '1')
+      categoryId: newProduct.categoryId || (categories[0]?.id || '1'),
+      imageUrl: newProduct.imageUrl || newProduct.images[0]
     };
 
     if (editMode && currentId) {
@@ -335,29 +371,42 @@ const AdminDashboard: React.FC = () => {
                   <label>Technical Details</label>
                   <textarea required value={newProduct.details} onChange={e => setNewProduct({...newProduct, details: e.target.value})} placeholder="Full specifications..." rows={4} />
                 </div>
+                
                 <div className="form-group">
-                  <label>Visual Asset</label>
-                  <div className="image-upload-wrapper">
-                    <div className="image-preview">
-                      {newProduct.imageUrl ? (
-                        <img src={newProduct.imageUrl} alt="Preview" />
-                      ) : (
-                        <div className="placeholder-preview"><ImageIcon size={32} /></div>
-                      )}
-                    </div>
-                    <div className="upload-controls">
-                      <div className="url-input">
-                        <ImageIcon size={18} />
-                        <input value={newProduct.imageUrl} onChange={e => setNewProduct({...newProduct, imageUrl: e.target.value})} placeholder="Asset URL..." />
-                      </div>
-                      <div className="file-input-btn">
-                        <Upload size={18} />
-                        <span>Upload from System</span>
-                        <input type="file" accept="image/*" onChange={handleImageUpload} />
-                      </div>
+                  <label>Product Gallery (First image will be the primary thumbnail)</label>
+                  <div className="image-management">
+                    <div className="image-grid">
+                      <AnimatePresence>
+                        {newProduct.images.map((url, index) => (
+                          <motion.div 
+                            key={index} 
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            className={`image-item ${url === newProduct.imageUrl ? 'primary' : ''}`}
+                          >
+                            <img src={url} alt={`Gallery ${index}`} />
+                            <div className="image-overlay">
+                              <button type="button" onClick={() => setAsPrimary(url)} title="Set as primary" className="set-primary-btn">
+                                <CheckCircle size={16} />
+                              </button>
+                              <button type="button" onClick={() => removeImage(index)} title="Remove image" className="remove-btn">
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                            {url === newProduct.imageUrl && <span className="primary-badge">Primary</span>}
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                      <label className="add-image-placeholder">
+                        <Plus size={32} />
+                        <span>Add Photo</span>
+                        <input type="file" multiple accept="image/*" onChange={handleImageUpload} hidden />
+                      </label>
                     </div>
                   </div>
                 </div>
+
                 <button type="submit" className="btn-primary submit-btn">
                   {editMode ? 'Synchronize Changes' : 'Initialize Project'}
                 </button>

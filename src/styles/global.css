@@ -116,7 +116,13 @@ button {
 
 main {
   flex: 1;
-  padding-top: 2rem;
+  padding-top: 10rem;
+}
+
+@media (max-width: 768px) {
+  main {
+    padding-top: 8rem;
+  }
 }
 
 .footer-simple {

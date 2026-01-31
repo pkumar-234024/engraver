@@ -17,6 +17,10 @@ const initialState: ProductState = {
       price: 49.99,
       categoryId: '1',
       imageUrl: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=800',
+      images: [
+        'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=800',
+        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=800'
+      ],
       details: 'Our brass name plates are made from high-quality solid brass, meticulously engraved and polished to a mirror finish. Perfect for outdoor use as they are weather-resistant.'
     },
     {
@@ -26,6 +30,10 @@ const initialState: ProductState = {
       price: 29.99,
       categoryId: '2',
       imageUrl: 'https://images.unsplash.com/photo-1583512676225-8664ec602929?auto=format&fit=crop&q=80&w=800',
+      images: [
+        'https://images.unsplash.com/photo-1583512676225-8664ec602929?auto=format&fit=crop&q=80&w=800',
+        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=800'
+      ],
       details: 'Sleek and professional acrylic stands for displaying your custom posters. The engraving is deep and precise, creating a beautiful light-diffusing effect.'
     },
     {
@@ -35,6 +43,9 @@ const initialState: ProductState = {
       price: 19.99,
       categoryId: '3',
       imageUrl: 'https://images.unsplash.com/photo-1589998059171-988d887df646?auto=format&fit=crop&q=80&w=800',
+      images: [
+        'https://images.unsplash.com/photo-1589998059171-988d887df646?auto=format&fit=crop&q=80&w=800'
+      ],
       details: 'High-quality self-inking stamps designed for thousands of impressions. The rubber is laser-engraved for maximum clarity and detail.'
     }
   ],

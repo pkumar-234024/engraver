@@ -4,7 +4,8 @@ export interface Product {
   description: string;
   price: number;
   categoryId: string;
-  imageUrl: string;
+  imageUrl: string; // Primary thumbnail
+  images: string[]; // Additional gallery images
   details: string;
 }
 

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../app/store';
 import { ArrowLeft, Phone, Calendar, ShieldCheck } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import './ProductDetail.css';
 
 const ProductDetail: React.FC = () => {
@@ -11,6 +11,8 @@ const ProductDetail: React.FC = () => {
   const product = useSelector((state: RootState) => 
     state.products.items.find(p => p.id === id)
   );
+
+  const [activeImage, setActiveImage] = useState(product?.imageUrl || '');
 
   if (!product) {
     return (
@@ -21,6 +23,8 @@ const ProductDetail: React.FC = () => {
     );
   }
 
+  const galleryImages = product.images && product.images.length > 0 ? product.images : [product.imageUrl];
+
   return (
     <div className="product-detail-page container">
       <Link to="/" className="back-link">
@@ -28,13 +32,43 @@ const ProductDetail: React.FC = () => {
       </Link>
 
       <div className="detail-grid">
-        <motion.div 
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="detail-image"
-        >
-          <img src={product.imageUrl} alt={product.name} className="glass-card" />
-        </motion.div>
+        <div className="detail-media">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="main-image-wrapper"
+          >
+            <AnimatePresence mode="wait">
+              <motion.img 
+                key={activeImage}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                src={activeImage || product.imageUrl} 
+                alt={product.name} 
+                className="glass-card main-image" 
+              />
+            </AnimatePresence>
+          </motion.div>
+          
+          {galleryImages.length > 1 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="thumbnail-gallery"
+            >
+              {galleryImages.map((img, idx) => (
+                <button 
+                  key={idx} 
+                  className={`thumb-btn ${activeImage === img ? 'active' : ''}`}
+                  onClick={() => setActiveImage(img)}
+                >
+                  <img src={img} alt="" />
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </div>
 
         <motion.div 
           initial={{ opacity: 0, x: 50 }}
