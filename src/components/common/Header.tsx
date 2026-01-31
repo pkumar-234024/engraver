@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Scissors, LayoutDashboard, ShoppingBag, Phone, Menu, X } from 'lucide-react';
-import { siteConfig } from '../../config/site';
+import type { RootState } from '../../app/store';
 import './Header.css';
 
 const Header: React.FC = () => {
   const location = useLocation();
+  const site = useSelector((state: RootState) => state.site);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
@@ -36,7 +38,7 @@ const Header: React.FC = () => {
       <div className="container nav-content">
         <Link to="/" className="logo" onClick={() => setIsMenuOpen(false)}>
           <Scissors className="logo-icon" />
-          <span className="gradient-text">{siteConfig.logo.text}</span>
+          <span className="gradient-text">{site.logoText}</span>
         </Link>
         
         <button className="mobile-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>

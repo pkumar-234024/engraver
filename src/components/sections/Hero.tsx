@@ -1,9 +1,12 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
-import { siteConfig } from '../../config/site';
+import type { RootState } from '../../app/store';
 import './Hero.css';
 
 const Hero: React.FC = () => {
+  const site = useSelector((state: RootState) => state.site);
+
   return (
     <section className="hero">
       <div className="container" style={{ position: 'relative', zIndex: 1 }}>
@@ -20,7 +23,7 @@ const Hero: React.FC = () => {
           transition={{ delay: 0.2 }}
           className="hero-subtitle"
         >
-          {siteConfig.tagline} We bring your ideas to life with laser precision.
+          {site.tagline} We bring your ideas to life with laser precision.
         </motion.p>
         <motion.div 
           initial={{ opacity: 0, y: 20 }}

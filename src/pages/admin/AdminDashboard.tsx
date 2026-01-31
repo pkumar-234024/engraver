@@ -4,10 +4,11 @@ import type { RootState } from '../../app/store';
 import { addProduct, deleteProduct, updateProduct } from '../../features/products/productSlice';
 import { addCategory, deleteCategory } from '../../features/categories/categorySlice';
 import { logout } from '../../features/auth/authSlice';
+import { updateSiteConfig } from '../../features/site/siteSlice';
 import { 
   Trash2, Package, Tag, PlusCircle, X, Search, Filter, 
   Edit3, LogOut, CheckCircle, 
-  Plus
+  Plus, Settings, Save, Globe, Phone
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './AdminDashboard.css';
@@ -15,9 +16,10 @@ import './AdminDashboard.css';
 const AdminDashboard: React.FC = () => {
   const products = useSelector((state: RootState) => state.products.items);
   const categories = useSelector((state: RootState) => state.categories.items);
+  const site = useSelector((state: RootState) => state.site);
   const dispatch = useDispatch();
 
-  const [activeTab, setActiveTab] = useState<'products' | 'categories'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'settings'>('products');
   const [showProductModal, setShowProductModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   
@@ -35,8 +37,8 @@ const AdminDashboard: React.FC = () => {
     description: '',
     price: '',
     categoryId: '',
-    imageUrl: '', // This will be our primary/thumbnail
-    images: [] as string[], // All gallery images
+    imageUrl: '',
+    images: [] as string[],
     details: ''
   });
 
@@ -44,6 +46,9 @@ const AdminDashboard: React.FC = () => {
     name: '',
     description: ''
   });
+
+  // Settings State
+  const [siteSettings, setSiteSettings] = useState(site);
 
   // Filtered Products
   const filteredProducts = useMemo(() => {
@@ -66,7 +71,6 @@ const AdminDashboard: React.FC = () => {
             return { 
               ...prev, 
               images: updatedImages,
-              // If primary image is empty, set it to the first uploaded one
               imageUrl: prev.imageUrl || updatedImages[0] 
             };
           });
@@ -80,7 +84,6 @@ const AdminDashboard: React.FC = () => {
     setNewProduct(prev => {
       const updatedImages = prev.images.filter((_, i) => i !== index);
       let updatedPrimary = prev.imageUrl;
-      // If we removed the primary image, pick the next available one
       if (prev.imageUrl === prev.images[index]) {
         updatedPrimary = updatedImages[0] || '';
       }
@@ -160,6 +163,12 @@ const AdminDashboard: React.FC = () => {
     showStatus('success', 'Category created!');
   };
 
+  const handleSaveSettings = (e: React.FormEvent) => {
+    e.preventDefault();
+    dispatch(updateSiteConfig(siteSettings));
+    showStatus('success', 'Site settings updated!');
+  };
+
   return (
     <div className="admin-page container">
       {/* Sidebar */}
@@ -184,6 +193,12 @@ const AdminDashboard: React.FC = () => {
           >
             <Tag size={20} /> Categories
           </button>
+          <button 
+            className={activeTab === 'settings' ? 'active' : ''} 
+            onClick={() => setActiveTab('settings')}
+          >
+            <Settings size={20} /> Site Settings
+          </button>
         </div>
         <button className="logout-btn" onClick={() => dispatch(logout())}>
           <LogOut size={20} /> Logout
@@ -193,13 +208,19 @@ const AdminDashboard: React.FC = () => {
       {/* Main Content */}
       <div className="admin-content">
         <div className="content-header">
-          <motion.h2 layout>{activeTab === 'products' ? 'Product Inventory' : 'Category Management'}</motion.h2>
-          <button 
-            className="btn-primary add-btn"
-            onClick={() => activeTab === 'products' ? setShowProductModal(true) : setShowCategoryModal(true)}
-          >
-            <PlusCircle size={20} /> Add New {activeTab === 'products' ? 'Product' : 'Category'}
-          </button>
+          <motion.h2 layout>
+            {activeTab === 'products' && 'Product Inventory'}
+            {activeTab === 'categories' && 'Category Management'}
+            {activeTab === 'settings' && 'Site Configuration'}
+          </motion.h2>
+          {activeTab !== 'settings' && (
+            <button 
+              className="btn-primary add-btn"
+              onClick={() => activeTab === 'products' ? setShowProductModal(true) : setShowCategoryModal(true)}
+            >
+              <PlusCircle size={20} /> Add New {activeTab === 'products' ? 'Product' : 'Category'}
+            </button>
+          )}
         </div>
 
         {/* Global Status Message */}
@@ -217,92 +238,92 @@ const AdminDashboard: React.FC = () => {
         </AnimatePresence>
 
         {activeTab === 'products' && (
-          <div className="filter-bar glass-card">
-            <div className="search-box">
-              <Search size={18} />
-              <input 
-                type="text" 
-                placeholder="Find a product..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+          <>
+            <div className="filter-bar glass-card">
+              <div className="search-box">
+                <Search size={18} />
+                <input 
+                  type="text" 
+                  placeholder="Find a product..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <div className="filter-box">
+                <Filter size={18} />
+                <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+                  <option value="all">All Categories</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
-            <div className="filter-box">
-              <Filter size={18} />
-              <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
-                <option value="all">All Categories</option>
-                {categories.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
 
-        {/* Data Table */}
-        <motion.div 
-          layout
-          className="data-table glass-card"
-        >
-          {activeTab === 'products' ? (
-            <table>
-              <thead>
-                <tr>
-                  <th>Product Details</th>
-                  <th>Category</th>
-                  <th>Pricing</th>
-                  <th className="actions">Operations</th>
-                </tr>
-              </thead>
-              <tbody>
-                <AnimatePresence mode="popLayout">
-                  {filteredProducts.map(product => (
-                    <motion.tr 
-                      layout
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      key={product.id}
-                    >
-                      <td>
-                        <div className="table-product">
-                          <img src={product.imageUrl} alt="" />
-                          <div>
-                            <div className="name">{product.name}</div>
-                            <div className="desc">{product.description}</div>
+            <motion.div layout className="data-table glass-card">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product Details</th>
+                    <th>Category</th>
+                    <th>Pricing</th>
+                    <th className="actions">Operations</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <AnimatePresence mode="popLayout">
+                    {filteredProducts.map(product => (
+                      <motion.tr 
+                        layout
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        key={product.id}
+                      >
+                        <td>
+                          <div className="table-product">
+                            <img src={product.imageUrl} alt="" />
+                            <div>
+                              <div className="name">{product.name}</div>
+                              <div className="desc">{product.description}</div>
+                            </div>
                           </div>
+                        </td>
+                        <td>
+                          <span className="category-tag-mini">
+                            {categories.find(c => c.id === product.categoryId)?.name}
+                          </span>
+                        </td>
+                        <td><span className="price-label">${product.price}</span></td>
+                        <td className="actions">
+                          <button onClick={() => openEditModal(product)} className="edit-btn" title="Edit Product">
+                            <Edit3 size={18} />
+                          </button>
+                          <button onClick={() => dispatch(deleteProduct(product.id))} className="delete-btn" title="Delete Product">
+                            <Trash2 size={18} />
+                          </button>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                  {filteredProducts.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="no-data">
+                        <div className="empty-state">
+                          <Package size={48} opacity={0.3} />
+                          <p>No products found matching your criteria.</p>
                         </div>
                       </td>
-                      <td>
-                        <span className="category-tag-mini">
-                          {categories.find(c => c.id === product.categoryId)?.name}
-                        </span>
-                      </td>
-                      <td><span className="price-label">${product.price}</span></td>
-                      <td className="actions">
-                        <button onClick={() => openEditModal(product)} className="edit-btn" title="Edit Product">
-                          <Edit3 size={18} />
-                        </button>
-                        <button onClick={() => dispatch(deleteProduct(product.id))} className="delete-btn" title="Delete Product">
-                          <Trash2 size={18} />
-                        </button>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </AnimatePresence>
-                {filteredProducts.length === 0 && (
-                  <tr>
-                    <td colSpan={4} className="no-data">
-                      <div className="empty-state">
-                        <Package size={48} opacity={0.3} />
-                        <p>No products found matching your criteria.</p>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          ) : (
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </motion.div>
+          </>
+        )}
+
+        {activeTab === 'categories' && (
+          <motion.div layout className="data-table glass-card">
             <table>
               <thead>
                 <tr>
@@ -325,8 +346,122 @@ const AdminDashboard: React.FC = () => {
                 ))}
               </tbody>
             </table>
-          )}
-        </motion.div>
+          </motion.div>
+        )}
+
+        {activeTab === 'settings' && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="settings-panel glass-card"
+          >
+            <form onSubmit={handleSaveSettings} className="admin-form">
+              <div className="settings-section">
+                <div className="section-header-mini">
+                  <Globe size={18} />
+                  <h3>General Branding</h3>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Website Name</label>
+                    <input 
+                      value={siteSettings.name} 
+                      onChange={e => setSiteSettings({...siteSettings, name: e.target.value})}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Logo Text</label>
+                    <input 
+                      value={siteSettings.logoText} 
+                      onChange={e => setSiteSettings({...siteSettings, logoText: e.target.value})}
+                    />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>Slogan / Tagline</label>
+                  <input 
+                    value={siteSettings.tagline} 
+                    onChange={e => setSiteSettings({...siteSettings, tagline: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="settings-section">
+                <div className="section-header-mini">
+                  <Phone size={18} />
+                  <h3>Contact Channels</h3>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Primary Phone</label>
+                    <input 
+                      value={siteSettings.contact.phone} 
+                      onChange={e => setSiteSettings({...siteSettings, contact: {...siteSettings.contact, phone: e.target.value}})}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Alternate Phone</label>
+                    <input 
+                      value={siteSettings.contact.alternatePhone} 
+                      onChange={e => setSiteSettings({...siteSettings, contact: {...siteSettings.contact, alternatePhone: e.target.value}})}
+                    />
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Email Address</label>
+                    <input 
+                      value={siteSettings.contact.email} 
+                      onChange={e => setSiteSettings({...siteSettings, contact: {...siteSettings.contact, email: e.target.value}})}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Service Hours</label>
+                    <input 
+                      value={siteSettings.contact.workingHours} 
+                      onChange={e => setSiteSettings({...siteSettings, contact: {...siteSettings.contact, workingHours: e.target.value}})}
+                    />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>Physical Address</label>
+                  <textarea 
+                    value={siteSettings.contact.address} 
+                    onChange={e => setSiteSettings({...siteSettings, contact: {...siteSettings.contact, address: e.target.value}})}
+                    rows={2}
+                  />
+                </div>
+              </div>
+
+              <div className="settings-section">
+                <div className="section-header-mini">
+                  <Tag size={18} />
+                  <h3>Social Presence</h3>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Facebook URL</label>
+                    <input 
+                      value={siteSettings.social.facebook} 
+                      onChange={e => setSiteSettings({...siteSettings, social: {...siteSettings.social, facebook: e.target.value}})}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Instagram URL</label>
+                    <input 
+                      value={siteSettings.social.instagram} 
+                      onChange={e => setSiteSettings({...siteSettings, social: {...siteSettings.social, instagram: e.target.value}})}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" className="btn-primary submit-btn">
+                <Save size={20} /> Commit All Changes
+              </button>
+            </form>
+          </motion.div>
+        )}
       </div>
 
       {/* Product Modal */}

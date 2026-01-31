@@ -1,9 +1,12 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { ArrowRight, Phone, Mail, Clock } from 'lucide-react';
-import { siteConfig } from '../../config/site';
+import type { RootState } from '../../app/store';
 import './Contact.css';
 
 const Contact: React.FC = () => {
+  const site = useSelector((state: RootState) => state.site);
+
   return (
     <section id="contact" className="contact-section">
       <div className="container">
@@ -18,9 +21,9 @@ const Contact: React.FC = () => {
                 <div className="icon"><Phone size={24} /></div>
                 <div>
                   <span className="label">Call Us</span>
-                  <span className="value">{siteConfig.contact.phone}</span>
-                  {siteConfig.contact.alternatePhone && (
-                    <span className="value" style={{ fontSize: '0.9rem', opacity: 0.8 }}>{siteConfig.contact.alternatePhone}</span>
+                  <span className="value">{site.contact.phone}</span>
+                  {site.contact.alternatePhone && (
+                    <span className="value" style={{ fontSize: '0.9rem', opacity: 0.8 }}>{site.contact.alternatePhone}</span>
                   )}
                 </div>
               </div>
@@ -28,19 +31,19 @@ const Contact: React.FC = () => {
                 <div className="icon"><Mail size={24} /></div>
                 <div>
                   <span className="label">Email Address</span>
-                  <span className="value">{siteConfig.contact.email}</span>
+                  <span className="value">{site.contact.email}</span>
                 </div>
               </div>
               <div className="contact-item">
                 <div className="icon"><Clock size={24} /></div>
                 <div>
                   <span className="label">Working Hours</span>
-                  <span className="value">{siteConfig.contact.workingHours}</span>
+                  <span className="value">{site.contact.workingHours}</span>
                 </div>
               </div>
             </div>
 
-            <a href={`mailto:${siteConfig.contact.email}`} className="btn-primary contact-cta">
+            <a href={`mailto:${site.contact.email}`} className="btn-primary contact-cta">
               Send a Message <ArrowRight size={18} />
             </a>
           </div>

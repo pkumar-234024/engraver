@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { Shield, Lock, Eye, FileText } from 'lucide-react';
-import { siteConfig } from '../../config/site';
+import type { RootState } from '../../app/store';
 import './PrivacyPolicy.css';
 
 const PrivacyPolicy: React.FC = () => {
+  const site = useSelector((state: RootState) => state.site);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -33,7 +36,7 @@ const PrivacyPolicy: React.FC = () => {
               <Eye size={24} className="icon" />
               <h2>Information We Collect</h2>
             </div>
-            <p>At {siteConfig.name}, we collect information you provide directly to us when you request a quote, place an order, or contact us for support. This includes:</p>
+            <p>At {site.name}, we collect information you provide directly to us when you request a quote, place an order, or contact us for support. This includes:</p>
             <ul>
               <li>Name, email address, and phone number.</li>
               <li>Shipping and billing addresses.</li>
@@ -68,7 +71,7 @@ const PrivacyPolicy: React.FC = () => {
               <FileText size={24} className="icon" />
               <h2>Your Rights</h2>
             </div>
-            <p>You have the right to request access to the personal data we hold about you, to request corrections, or to ask for your data to be deleted from our records by contacting us at {siteConfig.contact.email}.</p>
+            <p>You have the right to request access to the personal data we hold about you, to request corrections, or to ask for your data to be deleted from our records by contacting us at {site.contact.email}.</p>
           </section>
         </motion.div>
 
@@ -82,9 +85,9 @@ const PrivacyPolicy: React.FC = () => {
             <h3>Questions?</h3>
             <p>If you have any questions about this Privacy Policy, please contact us:</p>
             <ul className="sidebar-contact">
-              <li><strong>Email:</strong> {siteConfig.contact.email}</li>
-              <li><strong>Phone:</strong> {siteConfig.contact.phone}</li>
-              <li><strong>Address:</strong><br />{siteConfig.contact.address}</li>
+              <li><strong>Email:</strong> {site.contact.email}</li>
+              <li><strong>Phone:</strong> {site.contact.phone}</li>
+              <li><strong>Address:</strong><br />{site.contact.address}</li>
             </ul>
           </div>
         </motion.aside>

@@ -1,23 +1,26 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Scissors, Mail, Phone, MapPin, Facebook, Instagram, Twitter } from 'lucide-react';
-import { siteConfig } from '../../config/site';
+import type { RootState } from '../../app/store';
 import './Footer.css';
 
 const Footer: React.FC = () => {
+  const site = useSelector((state: RootState) => state.site);
+
   return (
     <footer className="main-footer">
       <div className="container footer-grid">
         <div className="footer-brand">
           <div className="logo">
             <Scissors className="logo-icon" />
-            <span className="gradient-text">{siteConfig.name}</span>
+            <span className="gradient-text">{site.name}</span>
           </div>
-          <p>{siteConfig.tagline}</p>
+          <p>{site.tagline}</p>
           <div className="social-links">
-            <a href={siteConfig.social.facebook} target="_blank" rel="noopener noreferrer"><Facebook size={20} /></a>
-            <a href={siteConfig.social.instagram} target="_blank" rel="noopener noreferrer"><Instagram size={20} /></a>
-            <a href={siteConfig.social.twitter} target="_blank" rel="noopener noreferrer"><Twitter size={20} /></a>
+            <a href={site.social.facebook} target="_blank" rel="noopener noreferrer"><Facebook size={20} /></a>
+            <a href={site.social.instagram} target="_blank" rel="noopener noreferrer"><Instagram size={20} /></a>
+            <a href={site.social.twitter} target="_blank" rel="noopener noreferrer"><Twitter size={20} /></a>
           </div>
         </div>
 
@@ -35,15 +38,15 @@ const Footer: React.FC = () => {
         <div className="footer-contact">
           <h4>Contact Us</h4>
           <ul>
-            <li><Phone size={18} /> {siteConfig.contact.phone}</li>
-            <li><Mail size={18} /> {siteConfig.contact.email}</li>
-            <li><MapPin size={18} /> {siteConfig.contact.address}</li>
+            <li><Phone size={18} /> {site.contact.phone}</li>
+            <li><Mail size={18} /> {site.contact.email}</li>
+            <li><MapPin size={18} /> {site.contact.address}</li>
           </ul>
         </div>
       </div>
       <div className="footer-bottom">
         <div className="container">
-          <p>&copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {site.name}. All rights reserved.</p>
         </div>
       </div>
     </footer>
